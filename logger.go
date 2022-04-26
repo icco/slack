@@ -15,7 +15,7 @@ type Logger interface {
 	Debugln(v ...interface{})
 }
 
-// internalLog implements the additional methods used by our internal logging
+// InternalLog implements the additional methods used by our internal logging
 // ontop of Output().
 type InternalLog struct {
 	Logger
@@ -45,3 +45,14 @@ func (t InternalLog) Debugf(format string, v ...interface{}) {
 func (t InternalLog) Debugln(v ...interface{}) {
 	t.Output(2, fmt.Sprint(v...))
 }
+
+type discard struct{}
+
+func (d discard) Output(int, string) error {
+	return nil
+}
+func (d discard) Print(...interface{})                   {}
+func (d discard) Printf(string, ...interface{})          {}
+func (d discard) Println(...interface{})                 {}
+func (d discard) Debugf(format string, v ...interface{}) {}
+func (d discard) Debugln(v ...interface{})               {}

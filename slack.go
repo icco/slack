@@ -2,7 +2,6 @@ package slack
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"net/url"
@@ -85,7 +84,7 @@ func OptionDebug(b bool) func(*Client) {
 // OptionLog set logging for client.
 func OptionLog(l Logger) func(*Client) {
 	return func(c *Client) {
-		c.log = internalLog{Logger: l}
+		c.log = l
 	}
 }
 
@@ -162,7 +161,7 @@ func (api *Client) Debugf(format string, v ...interface{}) {
 // Debugln is a shortcut helper for logging.
 func (api *Client) Debugln(v ...interface{}) {
 	if api.Debug() {
-		api.log.DebugLn(v)
+		api.log.Debugln(v)
 	}
 }
 
