@@ -76,8 +76,8 @@ func NewSecretsVerifier(header http.Header, secret string) (sv SecretsVerifier, 
 	return sv, err
 }
 
-func (v *SecretsVerifier) WithDebug(d Debug) *SecretsVerifier {
-	v.d = d
+func (v *SecretsVerifier) WithLogger(d Logger) *SecretsVerifier {
+	v.log = d
 	return v
 }
 

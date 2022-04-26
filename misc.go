@@ -75,7 +75,7 @@ func fileUploadReq(ctx context.Context, path string, values url.Values, r io.Rea
 	return req, nil
 }
 
-func downloadFile(ctx context.Context, client httpClient, token string, downloadURL string, writer io.Writer, d Debug) error {
+func downloadFile(ctx context.Context, client httpClient, token string, downloadURL string, writer io.Writer, d Logger) error {
 	if downloadURL == "" {
 		return fmt.Errorf("received empty download URL")
 	}
@@ -128,20 +128,18 @@ func jsonReq(ctx context.Context, endpoint string, body interface{}) (req *http.
 	return req, nil
 }
 
-func parseResponseBody(body io.ReadCloser, intf interface{}, d Debug) error {
+func parseResponseBody(body io.ReadCloser, intf interface{}, d Logger) error {
 	response, err := ioutil.ReadAll(body)
 	if err != nil {
 		return err
 	}
 
-	if d.Debug() {
-		d.Debugln("parseResponseBody", string(response))
-	}
+	d.Debugln("parseResponseBody", string(response))
 
 	return json.Unmarshal(response, intf)
 }
 
-func postLocalWithMultipartResponse(ctx context.Context, client httpClient, method, fpath, fieldname, token string, values url.Values, intf interface{}, d Debug) error {
+func postLocalWithMultipartResponse(ctx context.Context, client httpClient, method, fpath, fieldname, token string, values url.Values, intf interface{}, d Logger) error {
 	fullpath, err := filepath.Abs(fpath)
 	if err != nil {
 		return err
@@ -155,7 +153,7 @@ func postLocalWithMultipartResponse(ctx context.Context, client httpClient, meth
 	return postWithMultipartResponse(ctx, client, method, filepath.Base(fpath), fieldname, token, values, file, intf, d)
 }
 
-func postWithMultipartResponse(ctx context.Context, client httpClient, path, name, fieldname, token string, values url.Values, r io.Reader, intf interface{}, d Debug) error {
+func postWithMultipartResponse(ctx context.Context, client httpClient, path, name, fieldname, token string, values url.Values, r io.Reader, intf interface{}, d Logger) error {
 	pipeReader, pipeWriter := io.Pipe()
 	wr := multipart.NewWriter(pipeWriter)
 	errc := make(chan error)
@@ -202,7 +200,7 @@ func postWithMultipartResponse(ctx context.Context, client httpClient, path, nam
 	}
 }
 
-func doPost(ctx context.Context, client httpClient, req *http.Request, parser responseParser, d Debug) error {
+func doPost(ctx context.Context, client httpClient, req *http.Request, parser responseParser, d Logger) error {
 	resp, err := client.Do(req)
 	if err != nil {
 		return err
@@ -218,7 +216,7 @@ func doPost(ctx context.Context, client httpClient, req *http.Request, parser re
 }
 
 // post JSON.
-func postJSON(ctx context.Context, client httpClient, endpoint, token string, json []byte, intf interface{}, d Debug) error {
+func postJSON(ctx context.Context, client httpClient, endpoint, token string, json []byte, intf interface{}, d Logger) error {
 	reqBody := bytes.NewBuffer(json)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, reqBody)
 	if err != nil {
@@ -231,7 +229,7 @@ func postJSON(ctx context.Context, client httpClient, endpoint, token string, js
 }
 
 // post a url encoded form.
-func postForm(ctx context.Context, client httpClient, endpoint string, values url.Values, intf interface{}, d Debug) error {
+func postForm(ctx context.Context, client httpClient, endpoint string, values url.Values, intf interface{}, d Logger) error {
 	reqBody := strings.NewReader(values.Encode())
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, reqBody)
 	if err != nil {
@@ -241,7 +239,7 @@ func postForm(ctx context.Context, client httpClient, endpoint string, values ur
 	return doPost(ctx, client, req, newJSONParser(intf), d)
 }
 
-func getResource(ctx context.Context, client httpClient, endpoint, token string, values url.Values, intf interface{}, d Debug) error {
+func getResource(ctx context.Context, client httpClient, endpoint, token string, values url.Values, intf interface{}, d Logger) error {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, nil)
 	if err != nil {
 		return err
@@ -254,19 +252,17 @@ func getResource(ctx context.Context, client httpClient, endpoint, token string,
 	return doPost(ctx, client, req, newJSONParser(intf), d)
 }
 
-func parseAdminResponse(ctx context.Context, client httpClient, method string, teamName string, values url.Values, intf interface{}, d Debug) error {
+func parseAdminResponse(ctx context.Context, client httpClient, method string, teamName string, values url.Values, intf interface{}, d Logger) error {
 	endpoint := fmt.Sprintf(WEBAPIURLFormat, teamName, method, time.Now().Unix())
 	return postForm(ctx, client, endpoint, values, intf, d)
 }
 
-func logResponse(resp *http.Response, d Debug) error {
-	if d.Debug() {
-		text, err := httputil.DumpResponse(resp, true)
-		if err != nil {
-			return err
-		}
-		d.Debugln(string(text))
+func logResponse(resp *http.Response, d Logger) error {
+	text, err := httputil.DumpResponse(resp, true)
+	if err != nil {
+		return err
 	}
+	d.Debugln(string(text))
 
 	return nil
 }
@@ -287,7 +283,7 @@ func timerReset(t *time.Timer, d time.Duration) {
 	t.Reset(d)
 }
 
-func checkStatusCode(resp *http.Response, d Debug) error {
+func checkStatusCode(resp *http.Response, d Logger) error {
 	if resp.StatusCode == http.StatusTooManyRequests {
 		retry, err := strconv.ParseInt(resp.Header.Get("Retry-After"), 10, 64)
 		if err != nil {
