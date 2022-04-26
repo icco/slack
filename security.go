@@ -20,7 +20,7 @@ const (
 
 // SecretsVerifier contains the information needed to verify that the request comes from Slack
 type SecretsVerifier struct {
-	log       *Logger
+	log       Logger
 	signature []byte
 	hmac      hash.Hash
 }
