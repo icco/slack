@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"net/url"
 	"os"
 
 	"github.com/slack-go/slack"
