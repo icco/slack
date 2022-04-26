@@ -132,17 +132,37 @@ func (api *Client) AuthTestContext(ctx context.Context) (response *AuthTestRespo
 	return &responseFull.AuthTestResponse, responseFull.Err()
 }
 
-// Debugf print a formatted debug line.
+// Output is a shortcut helper to logging.
+func (api *Client) Output(stackLevel int, str string) error {
+	return api.log.Output(stackLevel, str)
+}
+
+// Print is a shortcut helper to logging.
+func (api *Client) Print(v ...interface{}) {
+	api.log.Print(v)
+}
+
+// Printf is a shortcut helper to logging.
+func (api *Client) Printf(format string, v ...interface{}) {
+	api.log.Printf(format, v)
+}
+
+// Println is a shortcut helper to logging.
+func (api *Client) Println(v ...interface{}) {
+	api.log.Println(v)
+}
+
+// Debugf is a shortcut helper for logging.
 func (api *Client) Debugf(format string, v ...interface{}) {
-	if api.debug {
-		api.log.Output(2, fmt.Sprintf(format, v...))
+	if api.Debug() {
+		api.log.Debugf(format, v)
 	}
 }
 
-// Debugln print a debug line.
+// Debugln is a shortcut helper for logging.
 func (api *Client) Debugln(v ...interface{}) {
-	if api.debug {
-		api.log.Output(2, fmt.Sprintln(v...))
+	if api.Debug() {
+		api.log.DebugLn(v)
 	}
 }
 
