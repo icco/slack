@@ -59,5 +59,5 @@ type Client struct {
 	dialer *websocket.Dialer
 
 	debug bool
-	log   *slack.Logger
+	log   slack.Logger
 }

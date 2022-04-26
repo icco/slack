@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/slack-go/slack"
@@ -17,7 +16,6 @@ func main() {
 	api := slack.New(
 		token,
 		slack.OptionDebug(true),
-		slack.OptionLog(log.New(os.Stdout, "slack-bot: ", log.Lshortfile|log.LstdFlags)),
 	)
 
 	rtm := api.NewRTM()

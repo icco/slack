@@ -36,14 +36,14 @@ func main() {
 	api := slack.New(
 		botToken,
 		slack.OptionDebug(true),
-		slack.OptionLog(log.New(os.Stdout, "api: ", log.Lshortfile|log.LstdFlags)),
+		slack.OptionLog(internalLog{log: log.New(os.Stderr, "slack-go/slack/socketmode", log.LstdFlags|log.Lshortfile)}),
 		slack.OptionAppLevelToken(appToken),
 	)
 
 	client := socketmode.New(
 		api,
 		socketmode.OptionDebug(true),
-		socketmode.OptionLog(log.New(os.Stdout, "socketmode: ", log.Lshortfile|log.LstdFlags)),
+		socketmode.OptionLog(internalLog{log: log.New(os.Stderr, "slack-go/slack/socketmode", log.LstdFlags|log.Lshortfile)}),
 	)
 
 	go func() {
