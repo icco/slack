@@ -104,7 +104,7 @@ func New(token string, options ...Option) *Client {
 		token:      token,
 		endpoint:   APIURL,
 		httpclient: &http.Client{},
-		log:        log.New(os.Stderr, "slack-go/slack", log.LstdFlags|log.Lshortfile),
+		log:        internalLog{log: log.New(os.Stderr, "slack-go/slack", log.LstdFlags|log.Lshortfile)},
 	}
 
 	for _, opt := range options {
