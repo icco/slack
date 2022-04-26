@@ -20,7 +20,7 @@ const (
 
 // SecretsVerifier contains the information needed to verify that the request comes from Slack
 type SecretsVerifier struct {
-	d         Debug
+	log       *Logger
 	signature []byte
 	hmac      hash.Hash
 }
@@ -92,9 +92,7 @@ func (v SecretsVerifier) Ensure() error {
 	if hmac.Equal(computed, v.signature) {
 		return nil
 	}
-	if v.d != nil && v.d.Debug() {
-		v.d.Debugln(fmt.Sprintf("Expected signing signature: %s, but computed: %s", hex.EncodeToString(v.signature), hex.EncodeToString(computed)))
-	}
+	v.log.Debugln(fmt.Sprintf("Expected signing signature: %s, but computed: %s", hex.EncodeToString(v.signature), hex.EncodeToString(computed)))
 	return fmt.Errorf("Computed unexpected signature of: %s", hex.EncodeToString(computed))
 }
 
