@@ -4,29 +4,20 @@ import (
 	"fmt"
 )
 
-// Logger is a logger interface compatible with both stdlib and some
-// 3rd party loggers.
+// Logger is a logger interface compatible with both stdlib and some 3rd party
+// loggers.
 type Logger interface {
 	Output(int, string) error
-}
-
-// ilogger represents the internal logging api we use.
-type ilogger interface {
-	Logger
-
 	Print(...interface{})
 	Printf(string, ...interface{})
 	Println(...interface{})
-
-	// Debugf print a formatted debug line.
 	Debugf(format string, v ...interface{})
-
-	// Debugln print a debug line.
 	Debugln(v ...interface{})
 }
 
-// internalLog implements the additional methods used by our internal logging.
-type internalLog struct {
+// internalLog implements the additional methods used by our internal logging
+// ontop of Output().
+type InternalLog struct {
 	Logger
 }
 

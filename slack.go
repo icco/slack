@@ -61,7 +61,7 @@ type Client struct {
 	appLevelToken string
 	endpoint      string
 	debug         bool
-	log           ilogger
+	log           Logger
 	httpclient    httpClient
 }
 
@@ -83,9 +83,9 @@ func OptionDebug(b bool) func(*Client) {
 }
 
 // OptionLog set logging for client.
-func OptionLog(l logger) func(*Client) {
+func OptionLog(l Logger) func(*Client) {
 	return func(c *Client) {
-		c.log = internalLog{logger: l}
+		c.log = internalLog{Logger: l}
 	}
 }
 
